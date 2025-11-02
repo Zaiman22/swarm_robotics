@@ -52,7 +52,7 @@ if __name__ == "__main__":
     def update(frame):
         global a
         ax.cla()  # clear the axes each frame
-        swarm1.changePosition(np.array([a,0,0]))
+        swarm1.changeAngle(a)
         a += 0.01
         
         # swarm1.pos[0] += 0.1

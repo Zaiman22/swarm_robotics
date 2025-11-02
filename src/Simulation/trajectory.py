@@ -17,8 +17,8 @@ Please feel free to use and modify this, but keep the above information. Thanks!
 import numpy as np
 from numpy import pi
 from numpy.linalg import norm
-from waypoints import makeWaypoints
-import config
+from Simulation.waypoints import makeWaypoints
+import Simulation.config as config
 
 class Trajectory:
 
@@ -100,6 +100,8 @@ class Trajectory:
         def pos_waypoint_timed():
             
             if not (len(self.t_wps) == self.wps.shape[0]):
+                print(self.wps.shape[0])
+                print(len(self.t_wps))
                 raise Exception("Time array and waypoint array not the same size.")
             elif (np.diff(self.t_wps) <= 0).any():
                 raise Exception("Time array isn't properly ordered.")  

@@ -11,12 +11,12 @@ import matplotlib.pyplot as plt
 import time
 import cProfile
 
-from trajectory import Trajectory
-from ctrl import Control
-from quadFiles.quad import Quadcopter
-from utils.windModel import Wind
-import utils
-import config
+from Simulation.trajectory import Trajectory
+from Simulation.ctrl import Control
+from Simulation.quadFiles.quad import Quadcopter
+from Simulation.utils.windModel import Wind
+import Simulation.utils as utils
+import Simulation.config as config
 
 def quad_sim(t, Ts, quad, ctrl, wind, traj):
     
@@ -53,22 +53,22 @@ def main():
 
     # Select Control Type             (0: xyz_pos,                  1: xy_vel_z_pos,            2: xyz_vel)
     ctrlType = ctrlOptions[0]   
-    # # Select Position Trajectory Type (0: hover,                    1: pos_waypoint_timed,      2: pos_waypoint_interp,    
-    # #                                  3: minimum velocity          4: minimum accel,           5: minimum jerk,           6: minimum snap
-    # #                                  7: minimum accel_stop        8: minimum jerk_stop        9: minimum snap_stop
-    # #                                 10: minimum jerk_full_stop   11: minimum snap_full_stop
-    # #                                 12: pos_waypoint_arrived     13: pos_waypoint_arrived_wait
-    # trajSelect[0] = 5         
-    # # Select Yaw Trajectory Type      (0: none                      1: yaw_waypoint_timed,      2: yaw_waypoint_interp     3: follow          4: zero)
-    # trajSelect[1] = 3           
-    # # Select if waypoint time is used, or if average speed is used to calculate waypoint time   (0: waypoint time,   1: average speed)
-    # trajSelect[2] = 1           
-    # print("Control type: {}".format(ctrlType))
+    # Select Position Trajectory Type (0: hover,                    1: pos_waypoint_timed,      2: pos_waypoint_interp,    
+    #                                  3: minimum velocity          4: minimum accel,           5: minimum jerk,           6: minimum snap
+    #                                  7: minimum accel_stop        8: minimum jerk_stop        9: minimum snap_stop
+    #                                 10: minimum jerk_full_stop   11: minimum snap_full_stop
+    #                                 12: pos_waypoint_arrived     13: pos_waypoint_arrived_wait
+    trajSelect[0] = 1      
+    # Select Yaw Trajectory Type      (0: none                      1: yaw_waypoint_timed,      2: yaw_waypoint_interp     3: follow          4: zero)
+    trajSelect[1] = 3           
+    # Select if waypoint time is used, or if average speed is used to calculate waypoint time   (0: waypoint time,   1: average speed)
+    trajSelect[2] = 1   
+    print("Control type: {}".format(ctrlType))
 
     # Initialize Quadcopter, Controller, Wind, Result Matrixes
     # ---------------------------
     quad = Quadcopter(Ti)
-    # traj = Trajectory(quad, ctrlType, trajSelect)
+    traj = Trajectory(quad, ctrlType, trajSelect)
     ctrl = Control(quad, traj.yawType)
     wind = Wind('None', 2.0, 90, -15)
 
@@ -135,6 +135,9 @@ def main():
         thr_all[i,:]         = quad.thr
         tor_all[i,:]         = quad.tor
         
+
+        print(quad.wMotor)
+
         i += 1
     
     end_time = time.time()

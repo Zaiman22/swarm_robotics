@@ -16,8 +16,8 @@ import numpy as np
 from numpy import pi
 from numpy import sin, cos, tan, sqrt
 from numpy.linalg import norm
-import utils
-import config
+import Simulation.utils as utils
+import Simulation.config as config
 
 rad2deg = 180.0/pi
 deg2rad = pi/180.0
