@@ -22,7 +22,7 @@ def quad_sim(t, Ts, quad, motor_control, wind):
 
     return t
 
-
+## finding the feedforwad thrust to hold positon
 
 if __name__ == "__main__":
     start_time = time.time
@@ -72,10 +72,12 @@ if __name__ == "__main__":
     print("start simulation")
     t = Ti
     i = 1
-    motor_input = np.ones(4)*600 # step function
+    thrust = 261.5
+    motor_input = np.ones(4)*thrust # step function
     while round(t,3) < Tf:
         
-        t = quad_sim(t, Ts, quad, motor_input, wind)
+
+        t = quad_sim(t, Ts, quad, motor_input+thrust, wind)
         
         # print("{:.3f}".format(t))
         t_all[i]             = t
@@ -89,7 +91,8 @@ if __name__ == "__main__":
         thr_all[i,:]         = quad.thr
         tor_all[i,:]         = quad.tor
         
-        # print(quad.wMotor)
+        print(motor_input)
+        print(quad.wMotor[0])
         i += 1
     
     end_time = time.time()

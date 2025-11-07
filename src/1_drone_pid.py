@@ -11,6 +11,15 @@ from Simulation.utils.windModel import Wind
 import Simulation.utils as utils
 import Simulation.config as config
 from controller.pid_helper import PIDController
+from controller.GA_helper import genetic_helper
+
+
+def motor_input(thrust,yaw,pitch,roll):
+    return np.array([thrust+roll+pitch+yaw,
+                     thrust-pitch+roll-yaw,
+                     thrust-roll-pitch+yaw,
+                     thrust+pitch-roll-yaw])
+
 
 
 
@@ -41,9 +50,22 @@ if __name__ == "__main__":
     quad = Quadcopter(Ti)
     wind = Wind('None', 2.0, 90, -15)
 
+    altitude_controller = PIDController(kp=2.7, ki=5.5, kd=60.0, dt=Ts)
+    alt_pid_coef = genetic_helper(4,10, 0.2)
+    alt_pid_coef.min_value = 0
+    alt_pid_coef.number_of_children = 8
+    alt_score = np.zeros([alt_pid_coef.size_population,2])
 
+
+    altitude_setpoint = 1.0
+    ffHover =523
+    
+    quad_input = np.zeros(4)
     # Initialize Result Matrixes
     # ---------------------------
+    for i in range(10): # 10 generation
+        for j in range(len(alt_pid_coef.size_population)):
+            
     numTimeStep = int(Tf/Ts+1)
 
     t_all          = np.zeros(numTimeStep)
@@ -70,13 +92,21 @@ if __name__ == "__main__":
 
     # Run Simulation
     # ---------------------------
-    print("start simulation")
+    # print("start simulation")
     t = Ti
     i = 1
-    motor_input = np.ones(4)*600 # step function
+
     while round(t,3) < Tf:
         
-        t = quad_sim(t, Ts, quad, motor_input, wind)
+        # controller
+
+        thrus_signal = altitude_controller.getInput(altitude_setpoint, -quad.pos[2])
+        thrus_signal +=ffHover
+
+        quad_input = motor_input(thrus_signal, 0, 0, 0)
+        print(quad.pos[2], thrus_signal)
+        # time step simulation
+        t = quad_sim(t, Ts, quad, quad_input, wind)
         
         # print("{:.3f}".format(t))
         t_all[i]             = t
@@ -94,6 +124,11 @@ if __name__ == "__main__":
         i += 1
     
     end_time = time.time()
+
+
+
+
+
 
     # View Results
     # ---------------------------
@@ -197,5 +232,10 @@ if __name__ == "__main__":
 
         
     # Creating the Animation object
+
+    # plotting angle
+    baba, angle_plot = plt.subplots()
+    angle_plot.plot(t_all, -pos_all[:,2], label='Roll')
+
     line_ani = animation.FuncAnimation(fig, updateLines, init_func=ini_plot, frames=len(t_all[0:-2:numFrames]), interval=(Ts*1000*numFrames), blit=False)
     plt.show()

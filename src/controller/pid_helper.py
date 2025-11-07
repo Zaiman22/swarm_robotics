@@ -1,11 +1,11 @@
 import math
-
+import numpy as np
 
 class PIDController:
-    def __init__(self, kp = 0, ki =0 , kd= 0, dt = 0.01):
-        self.kp = kp
-        self.ki = ki
-        self.kd = kd
+    def __init__(self, kp = 0, ki =0 , kd= 0, dt = 0.01, number_of_signals = 1):
+        self.kp = np.array(kp)
+        self.ki = np.array(ki)
+        self.kd = np.array(kd)
         self.dt = dt
 
         self.setpoint = 0
@@ -16,6 +16,9 @@ class PIDController:
 
         self.max_input = 1000
         self.min_input = -1000
+
+
+        self.control_signal = np.zeros(number_of_signals)
 
     def setSetPoint(self, setpoint):
         self.setpoint = setpoint
@@ -43,6 +46,6 @@ class PIDController:
         self.setSetPoint(setpoint)
         self.getError()
 
-        control_signal = self.kp*self.error + self.ki*self.cum_error + self.kd*self.deriv_error
-        return self.inputBounding(control_signal)
+        self.control_signal = self.kp*self.error + self.ki*self.cum_error + self.kd*self.deriv_error
+        return self.inputBounding(self.control_signal)
 
