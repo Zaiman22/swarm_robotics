@@ -14,6 +14,20 @@ from controller.pid_helper import PIDController
 from controller.GA_helper import genetic_helper
 
 
+
+reward = 0
+
+def reward_helper(t,error):
+    '''
+    this is a simple reward/fucntion. We still dont care how much the input is given, as long as the target reached in a certain time the reward will be good
+    '''
+    global reward
+
+    reward += -error*t # 
+
+
+
+
 def motor_input(thrust,yaw,pitch,roll):
     return np.array([thrust+roll+pitch+yaw,
                      thrust-pitch+roll-yaw,
